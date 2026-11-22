@@ -6,6 +6,7 @@ fun main(args: Array<String>) {
     val alpha = args[1].toFloat()
     val games = args[2].toInt()
     val depth = args.getOrElse(3) { "3" }.toInt()
+    val savePath = args.getOrNull(4)
     val net = Network.create(seed = 5, materialPrior = prior)
     val learner = TdLearner(net, TdConfig(alpha = alpha, depth = depth), seed = 99)
     val t0 = System.currentTimeMillis()
@@ -23,4 +24,5 @@ fun main(args: Array<String>) {
         if (g % 100 == 0) { println("  g=$g avg|delta|=${"%.3f".format(dsum/n)} lastPlies=${s.plies} ${s.status}"); dsum=0f; n=0 }
         if (g % (games/4) == 0) bench("after")
     }
+    savePath?.let { java.io.File(it).outputStream().use { o -> net.write(o) } }
 }
